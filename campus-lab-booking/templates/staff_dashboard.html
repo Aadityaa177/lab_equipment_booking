@@ -1,0 +1,48 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Staff Dashboard</h2>
+<p>Read-only view of computer health across the campus labs.</p>
+
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Computer</th>
+                <th>Lab</th>
+                <th>Floor</th>
+                <th>Health Status</th>
+                <th>Last Updated</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pc in computers %}
+            <tr>
+                <td>{{ pc.computer_code }}</td>
+                <td>{{ pc.lab_name }}</td>
+                <td>{{ pc.floor_number }}</td>
+                <td>
+                    {% if pc.health_status == 'HEALTHY' %}
+                        <span class="status-healthy">Healthy</span>
+                    {% else %}
+                        <span class="status-unhealthy">Unhealthy</span>
+                    {% endif %}
+                </td>
+                <td>{{ pc.health_updated_at or 'Not recorded' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No computers are registered.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

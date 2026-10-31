@@ -1,0 +1,77 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Weekly Lab Timetable</h2>
+<p>Select a period to open booking. Consecutive periods can be selected on the booking page.</p>
+
+<div class="table-wrap">
+<table id="timetable">
+    <thead>
+        <tr>
+            <th>Day</th>
+            <th colspan="6">Morning lab hours</th>
+            <th>Lunch</th>
+            <th colspan="6">Afternoon lab hours</th>
+        </tr>
+        <tr>
+            <th></th>
+            {% for time in [
+                '8:00–8:50', '8:51–9:40', '9:51–10:40',
+                '10:41–11:30', '11:40–12:30', '12:31–1:20'
+            ] %}
+                <th>{{ time }}</th>
+            {% endfor %}
+            <th></th>
+            {% for time in [
+                '2:00–2:50', '2:51–3:40', '3:51–4:40',
+                '4:41–5:30', '5:40–6:30', '6:31–7:20'
+            ] %}
+                <th>{{ time }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for day, first in [
+            ('MON', 1), ('TUE', 7), ('WED', 13),
+            ('THU', 19), ('FRI', 25)
+        ] %}
+        <tr>
+            <th>{{ day }}</th>
+
+            {% for i in range(6) %}
+                {% set code = 'L' ~ (first + i) %}
+                {% set slot = slots_by_code.get(code) %}
+                <td>
+                    {% if slot %}
+                    <a href="{{ url_for('booking', slot_id=slot.slot_id) }}">
+                        {{ slot.slot_code }}
+                    </a>
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+            {% endfor %}
+
+            <td class="lunch-cell">Lunch</td>
+
+            {% for i in range(6) %}
+                {% set code = 'L' ~ (first + 30 + i) %}
+                {% set slot = slots_by_code.get(code) %}
+                <td>
+                    {% if slot %}
+                    <a href="{{ url_for('booking', slot_id=slot.slot_id) }}">
+                        {{ slot.slot_code }}
+                    </a>
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

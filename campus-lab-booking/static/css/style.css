@@ -1,0 +1,85 @@
+*{box-sizing:border-box}
+
+body{margin:0;font-family:Arial,sans-serif;background:#f3f5fa;color:#20293a}
+
+header{background:#1b2a56;color:white;text-align:center;padding:24px}
+
+header h1{margin:0 0 8px}
+
+nav{display:flex;gap:15px;justify-content:center;align-items:center;flex-wrap:wrap}
+
+nav a{color:#fff}
+
+nav form{margin:0}
+
+main{max-width:1200px;margin:25px auto;padding:0 18px}
+
+.panel{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px #0001}
+
+.narrow{max-width:420px;margin:50px auto}
+
+label{display:block;margin:12px 0}
+
+input,select{display:block;width:100%;padding:11px;margin-top:5px;border:1px solid #c6cede;border-radius:7px}
+
+button{border:0;border-radius:7px;background:#2456a5;color:#fff;padding:11px 16px;cursor:pointer;margin:5px}
+
+button:disabled{opacity:.45;cursor:default}
+
+.muted{color:#69758a}.error{color:#aa1733}
+
+.table-wrap{overflow-x:auto}
+
+table{width:100%;border-collapse:collapse;background:#fff}
+
+td,th{border:1px solid #c9d2e0;padding:10px;text-align:center;min-width:80px}
+
+th{background:#dfe6f5}
+
+.slot{background:#fff7c4;color:#27304c;width:100%;margin:0}
+
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+
+.choices label{background:#e8edfa;border-radius:7px;padding:8px;cursor:pointer}
+
+.choices input,.computer-card input{width:auto;display:inline}
+
+.computer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:18px 0}
+
+.computer-card{padding:15px;border:1px solid #c8d4e4;border-radius:9px;background:#f9fbff}
+
+.booking-card{background:white;padding:18px;margin:12px 0;border-radius:9px;border:1px solid #d4dbea}
+
+.healthy{color:green}
+
+.unhealthy{color:#b32538}
+
+
+.status-healthy {
+    color: #166534;
+    background: #dcfce7;
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.status-unhealthy {
+    color: #991b1b;
+    background: #fee2e2;
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+table form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+table select {
+    padding: 7px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+}

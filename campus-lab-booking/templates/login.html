@@ -1,0 +1,42 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="panel narrow">
+    <h2>Login</h2>
+
+    <form action="{{ url_for('login') }}" method="post">
+        <label>
+            College ID
+            <input
+                name="college_id"
+                type="text"
+                required
+                placeholder="STU001"
+            >
+        </label>
+
+        <label>
+            Password
+            <input
+                name="password"
+                type="password"
+                required
+                autocomplete="current-password"
+            >
+        </label>
+
+        <button type="submit">Sign in</button>
+    </form>
+
+    <p class="muted">
+        Demo IDs: STU001, FAC001, STF001, INC001<br>
+        Demo password: DemoPass123!
+    </p>
+
+    <p>
+        New student?
+        <a href="{{ url_for('register') }}">Create an account</a>
+    </p>
+</section>
+{% endblock %}

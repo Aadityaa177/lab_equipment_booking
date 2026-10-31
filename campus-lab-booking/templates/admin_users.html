@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+.admin-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.admin-tabs button{border:1px solid #cbd5e1;background:#fff;color:#0f172a;padding:9px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+.admin-tabs button.active{background:#123b5d;color:#fff;border-color:#123b5d}
+.admin-panel{display:none}
+.admin-panel.active{display:block}
+.admin-table-wrap{overflow-x:auto;background:#fff;border:1px solid #e2e8f0;border-radius:10px}
+.admin-table{width:100%;border-collapse:collapse;min-width:680px}
+.admin-table th,.admin-table td{padding:11px 13px;text-align:left;border-bottom:1px solid #e2e8f0;font-size:14px}
+.admin-table th{background:#f1f5f9;color:#334155}
+.admin-table tr:last-child td{border-bottom:0}
+.count{font-size:13px;color:#64748b;margin:8px 0 12px}
+.empty{padding:18px;color:#64748b}
+.create-user-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:16px 0 24px;padding:16px;border:1px solid #e2e8f0;border-radius:10px}
+.create-user-form input,.create-user-form select{width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:6px}
+.create-user-form input:disabled{background:#e2e8f0;color:#64748b;cursor:not-allowed}
+.profile-edit{display:flex;gap:6px;flex-wrap:wrap;min-width:300px}
+.profile-edit input{min-width:100px;max-width:160px;padding:7px;border:1px solid #cbd5e1;border-radius:6px}
+.profile-edit button{padding:7px 10px;border:0;border-radius:6px;background:#2457a7;color:#fff;cursor:pointer}
+</style>
+<div class="admin-heading">
+  <div><h2>Admin · User Management</h2><p>Browse accounts by role instead of viewing one combined users table.</p></div>
+</div>
+
+<h3>Create faculty, staff or lab in-charge account</h3>
+<form class="create-user-form" method="post" action="{{ url_for('admin_create_user') }}">
+  <input name="college_id" placeholder="College / Staff ID" required maxlength="50">
+  <input name="full_name" placeholder="Full name" required maxlength="100">
+  <input name="email" type="email" placeholder="Institutional email" required>
+  <input name="password" type="password" placeholder="Password (minimum 8 characters)" required minlength="8">
+  <select name="role" id="new-role" required>
+    <option value="">Select role</option>
+    <option value="FACULTY">Faculty</option>
+    <option value="STAFF">Staff</option>
+    <option value="INCHARGE">Lab In-charge</option>
+  </select>
+  <input name="department" id="new-department" placeholder="Department (required)" required>
+  <input name="designation" id="new-designation" placeholder="Designation (required)" required>
+  <input name="lab_name" id="new-lab-name" placeholder="Lab name (in-charge only)" disabled>
+  <input name="floor_number" id="new-floor-number" type="number" min="0" max="100"
+         placeholder="Floor number (in-charge only)" disabled>
+  <button type="submit">Create account</button>
+</form>
+<p class="count">For Lab In-charge accounts, enter the new lab name and floor number too. The account, profile and lab assignment are created together.</p>
+
+<div class="admin-tabs" role="tablist" aria-label="Account categories">
+  <button type="button" class="active" data-panel="students">Students ({{ students|length }})</button>
+  <button type="button" data-panel="faculty">Faculty ({{ faculty|length }})</button>
+  <button type="button" data-panel="staff">Staff ({{ staff|length }})</button>
+  <button type="button" data-panel="lab-incharges">Lab In-charges ({{ lab_incharges|length }})</button>
+</div>
+
+<section id="students" class="admin-panel active">
+  <h3>Student accounts</h3><p class="count">{{ students|length }} account(s)</p>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>College ID</th><th>Name</th><th>Email</th><th>Programme</th><th>Year</th><th>Contact number</th></tr></thead><tbody>
+  {% for u in students %}<tr><td>{{ u.college_id }}</td><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td colspan="3">
+    <form class="profile-edit" method="post" action="{{ url_for('admin_update_profile', user_id=u.user_id) }}">
+      <input name="programme" placeholder="Programme" value="{{ u.programme or '' }}">
+      <input name="year_of_study" type="number" min="1" max="8" placeholder="Year" value="{{ u.year_of_study or '' }}">
+      <input name="contact_number" type="tel" inputmode="numeric" placeholder="Contact number" value="{{ u.contact_number or '' }}" pattern="[0-9]{8,15}" title="Enter 8 to 15 digits">
+      <button type="submit">Save profile</button>
+    </form>
+  </td></tr>{% else %}<tr><td colspan="6" class="empty">No student accounts found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<section id="faculty" class="admin-panel">
+  <h3>Faculty accounts</h3><p class="count">{{ faculty|length }} account(s)</p>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>College ID</th><th>Name</th><th>Email</th><th>Department</th><th>Designation</th></tr></thead><tbody>
+  {% for u in faculty %}<tr><td>{{ u.college_id }}</td><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td>{{ u.department or "—" }}</td><td>{{ u.designation or "—" }}</td></tr>{% else %}<tr><td colspan="5" class="empty">No faculty accounts found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<section id="staff" class="admin-panel">
+  <h3>Staff accounts</h3><p class="count">{{ staff|length }} account(s)</p>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>College ID</th><th>Name</th><th>Email</th><th>Department</th><th>Designation</th></tr></thead><tbody>
+  {% for u in staff %}<tr><td>{{ u.college_id }}</td><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td>{{ u.department or "—" }}</td><td>{{ u.designation or "—" }}</td></tr>{% else %}<tr><td colspan="5" class="empty">No staff accounts found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<section id="lab-incharges" class="admin-panel">
+  <h3>Lab in-charge accounts</h3><p class="count">{{ lab_incharges|length }} account(s)</p>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>College ID</th><th>Name</th><th>Email</th><th>Department</th><th>Designation</th><th>Assigned Lab</th><th>Floor</th></tr></thead><tbody>
+  {% for u in lab_incharges %}<tr><td>{{ u.college_id }}</td><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td>{{ u.department or "—" }}</td><td>{{ u.designation or "—" }}</td><td>{{ u.lab_name }}</td><td>{{ u.floor_number }}</td></tr>{% else %}<tr><td colspan="7" class="empty">No lab in-charge accounts found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<script>
+const roleSelect = document.getElementById('new-role');
+const departmentInput = document.getElementById('new-department');
+const designationInput = document.getElementById('new-designation');
+const labNameInput = document.getElementById('new-lab-name');
+const floorInput = document.getElementById('new-floor-number');
+function updateRoleFields() {
+  const needsProfile = ['FACULTY', 'STAFF', 'INCHARGE'].includes(roleSelect.value);
+  const isIncharge = roleSelect.value === 'INCHARGE';
+  departmentInput.required = needsProfile;
+  designationInput.required = needsProfile;
+  departmentInput.disabled = !needsProfile;
+  designationInput.disabled = !needsProfile;
+  labNameInput.required = isIncharge;
+  floorInput.required = isIncharge;
+  labNameInput.disabled = !isIncharge;
+  floorInput.disabled = !isIncharge;
+}
+roleSelect.addEventListener('change', updateRoleFields);
+updateRoleFields();
+
+document.querySelectorAll('.admin-tabs button').forEach(button => {
+  button.addEventListener('click', () => {
+    document.querySelectorAll('.admin-tabs button').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.remove('active'));
+    button.classList.add('active');
+    document.getElementById(button.dataset.panel).classList.add('active');
+  });
+});
+</script>
+{% endblock %}

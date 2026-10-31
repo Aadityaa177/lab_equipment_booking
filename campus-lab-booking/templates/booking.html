@@ -1,0 +1,41 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="booking-panel">
+    <h2>Book a Lab Computer</h2>
+    <p>Select your date and timetable period to find available computers.</p>
+
+    <form id="availability-form">
+        <label for="booking-date">Booking date</label>
+        <input type="date" id="booking-date" required>
+
+        <label for="slot-id">Timetable period</label>
+        <select id="slot-id" required>
+            <option value="">Loading timetable periods...</option>
+        </select>
+
+        <label for="purpose">Purpose of booking</label>
+        <input id="purpose" type="text"
+               placeholder="e.g. Database lab practice" required>
+
+        <button type="submit">Find Available Computers</button>
+    </form>
+
+    <p id="booking-message" role="status"></p>
+
+    <form id="booking-form" hidden>
+        <h3>Available Computers</h3>
+        <p id="selection-help"></p>
+        <div id="computer-list"></div>
+        <button type="submit">Confirm Booking</button>
+    </form>
+</section>
+
+<script>
+    window.CAMPUS_USER_ID = {{ current_user.id | tojson }};
+    window.SELECTED_SLOT_ID = {{ request.args.get('slot_id', '') | tojson }};
+    window.USER_ROLE = {{ current_user.role | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

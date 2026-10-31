@@ -1,0 +1,112 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Lab In-charge Dashboard</h2>
+
+<section class="panel">
+    <h2>Add a Computer to Your Lab</h2>
+    <p>Register a new PC in one of your assigned labs.</p>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <p role="alert">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    {% if labs %}
+    <form method="POST" action="{{ url_for('add_computer') }}">
+        <label for="computer_code">Computer code</label>
+        <input
+            id="computer_code"
+            name="computer_code"
+            placeholder="PC-06"
+            maxlength="50"
+            required
+        >
+
+        <label for="lab_id">Assigned lab</label>
+        <select id="lab_id" name="lab_id" required>
+            {% for lab in labs %}
+            <option value="{{ lab.lab_id }}">
+                {{ lab.lab_name }} — Floor {{ lab.floor_number }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label for="health_status">Initial health status</label>
+        <select id="health_status" name="health_status" required>
+            <option value="HEALTHY">Healthy</option>
+            <option value="UNHEALTHY">Unhealthy</option>
+        </select>
+
+        <button type="submit">Add Computer</button>
+    </form>
+    {% else %}
+        <p>No labs are currently assigned to your account.</p>
+    {% endif %}
+</section>
+
+<p>Manage computer health in your assigned labs.</p>
+
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
+{% if not labs %}
+    <p>No labs are currently assigned to your account.
+       Ask the administrator to assign your user to a lab.</p>
+{% endif %}
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Computer</th>
+                <th>Lab</th>
+                <th>Floor</th>
+                <th>Current Status</th>
+                <th>Update Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pc in computers %}
+            <tr>
+                <td>{{ pc.computer_code }}</td>
+                <td>{{ pc.lab_name }}</td>
+                <td>{{ pc.floor_number }}</td>
+                <td>
+                    {% if pc.health_status == 'HEALTHY' %}
+                        <span class="status-healthy">Healthy</span>
+                    {% else %}
+                        <span class="status-unhealthy">Unhealthy</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="post"
+                          action="{{ url_for('update_computer_health', computer_id=pc.computer_id) }}">
+                        <select name="health_status" required>
+                            <option value="HEALTHY"
+                                {% if pc.health_status == 'HEALTHY' %}selected{% endif %}>
+                                Healthy
+                            </option>
+                            <option value="UNHEALTHY"
+                                {% if pc.health_status == 'UNHEALTHY' %}selected{% endif %}>
+                                Unhealthy
+                            </option>
+                        </select>
+                        <button type="submit">Save</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5">No computers found in your assigned labs.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

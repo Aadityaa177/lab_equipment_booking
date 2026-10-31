@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+.admin-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.admin-tabs button{border:1px solid #cbd5e1;background:#fff;color:#0f172a;padding:9px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+.admin-tabs button.active{background:#123b5d;color:#fff;border-color:#123b5d}
+.admin-panel{display:none}
+.admin-panel.active{display:block}
+.admin-table-wrap{overflow-x:auto;background:#fff;border:1px solid #e2e8f0;border-radius:10px}
+.admin-table{width:100%;border-collapse:collapse;min-width:680px}
+.admin-table th,.admin-table td{padding:11px 13px;text-align:left;border-bottom:1px solid #e2e8f0;font-size:14px}
+.admin-table th{background:#f1f5f9;color:#334155}
+.admin-table tr:last-child td{border-bottom:0}
+.count{font-size:13px;color:#64748b;margin:8px 0 12px}
+.empty{padding:18px;color:#64748b}
+.create-user-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:16px 0 24px;padding:16px;border:1px solid #e2e8f0;border-radius:10px}
+.create-user-form input,.create-user-form select{width:100%;box-sizing:border-box;padding:10px;border:1px solid #cbd5e1;border-radius:6px}
+</style>
+<div class="admin-heading">
+  <div><h2>Admin · User Management</h2><p>Browse accounts by role instead of viewing one combined users table.</p></div>
+</div>
+
+<h3>Create faculty, staff or lab in-charge account</h3>
+<form class="create-user-form" method="post" action="{{ url_for('admin_create_user') }}">
+  <input name="college_id" placeholder="College / Staff ID" required maxlength="50">
+  <input name="full_name" placeholder="Full name" required maxlength="100">
+  <input name="email" type="email" placeholder="Institutional email" required>
+  <input name="password" type="password" placeholder="Password (minimum 8 characters)" required minlength="8">
+  <select name="role" required>
+    <option value="">Select role</option>
+    <option value="FACULTY">Faculty</option>
+    <option value="STAFF">Staff</option>
+    <option value="INCHARGE">Lab In-charge</option>
+  </select>
+  <button type="submit">Create account</button>
+</form>
+
+<div class="admin-tabs" role="tablist" aria-label="Account categories">
+  <button type="button" class="active" data-panel="students">Students ({{ students|length }})</button>
+  <button type="button" data-panel="faculty">Faculty ({{ faculty|length }})</button>
+  <button type="button" data-panel="staff">Staff ({{ staff|length }})</button>
+  <button type="button" data-panel="lab-incharges">Lab In-charges ({{ lab_incharges|length }})</button>
+</div>
+
+<section id="students" class="admin-panel active">
+  <h3>Student accounts</h3><p class="count">{{ students|length }} account(s)</p>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>College ID</th><th>Name</th><th>Email</th><th>Programme</th><th>Year</th><th>Section</th></tr></thead><tbody>
+  {% for u in students %}<tr><td>{{ u.college_id }}</td><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td>{{ u.programme or '—' }}</td><td>{{ u.year_of_study or '—' }}</td><td>{{ u.section or '—' }}</td></tr>{% else %}<tr><td colspan="6" class="empty">No student accounts found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<section id="faculty" class="admin-panel">
+  <h3>Faculty accounts</h3><p class="count">{{ faculty|length }} account(s)</p>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>College ID</th><th>Name</th><th>Email</th><th>Department</th><th>Designation</th></tr></thead><tbody>
+  {% for u in faculty %}<tr><td>{{ u.college_id }}</td><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td>{{ u.department or '—' }}</td><td>{{ u.designation or '—' }}</td></tr>{% else %}<tr><td colspan="5" class="empty">No faculty accounts found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<section id="staff" class="admin-panel">
+  <h3>Staff accounts</h3><p class="count">{{ staff|length }} account(s)</p>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>College ID</th><th>Name</th><th>Email</th><th>Department</th><th>Designation</th></tr></thead><tbody>
+  {% for u in staff %}<tr><td>{{ u.college_id }}</td><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td>{{ u.department or '—' }}</td><td>{{ u.designation or '—' }}</td></tr>{% else %}<tr><td colspan="5" class="empty">No staff accounts found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<section id="lab-incharges" class="admin-panel">
+  <h3>Lab in-charge accounts</h3><p class="count">{{ lab_incharges|length }} account(s)</p>
+  <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>College ID</th><th>Name</th><th>Email</th><th>Department</th><th>Designation</th></tr></thead><tbody>
+  {% for u in lab_incharges %}<tr><td>{{ u.college_id }}</td><td>{{ u.full_name }}</td><td>{{ u.email }}</td><td>{{ u.department or '—' }}</td><td>{{ u.designation or '—' }}</td></tr>{% else %}<tr><td colspan="5" class="empty">No lab in-charge accounts found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+<script>
+document.querySelectorAll('.admin-tabs button').forEach(button => {
+  button.addEventListener('click', () => {
+    document.querySelectorAll('.admin-tabs button').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.remove('active'));
+    button.classList.add('active');
+    document.getElementById(button.dataset.panel).classList.add('active');
+  });
+});
+</script>
+{% endblock %}

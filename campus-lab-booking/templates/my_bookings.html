@@ -1,0 +1,50 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>My Bookings</h2>
+<p>View your lab computer reservations and their current status.</p>
+
+{% if bookings %}
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Booking ID</th>
+                <th>Date</th>
+                <th>Timetable Periods</th>
+                <th>Computer(s)</th>
+                <th>Purpose</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.booking_id }}</td>
+                <td>{{ booking.booking_date }}</td>
+                <td>{{ booking.periods or '—' }}</td>
+                <td>{{ booking.computers or '—' }}</td>
+                <td>{{ booking.purpose }}</td>
+                <td>{{ booking.status }}</td>
+                <td>
+                    {% if booking.status == 'CONFIRMED' %}
+                    <form method="POST"
+                        action="{{ url_for('cancel', booking_id=booking.booking_id) }}"
+                        onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                        <button type="submit">Cancel Booking</button>
+                    </form>
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>You have no bookings yet. Visit the timetable to reserve a computer.</p>
+{% endif %}
+{% endblock %}
